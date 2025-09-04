@@ -2,9 +2,11 @@ package misc
 
 import (
 	"bytes"
+	"strings"
 	ttemplate "text/template"
 
 	"github.com/Masterminds/sprig/v3"
+	"github.com/kpechenenko/rword"
 )
 
 var (
@@ -41,6 +43,28 @@ func TemplateExec(tpl string, d any) ([]byte, bool, error) {
 		}
 		t["drop"] = func() string {
 			return drop
+		}
+		t["randWords"] = func(i int) string {
+			var g rword.GenerateRandom
+			var err error
+			// Create a random word generator using saved dict with 370_000+ words.
+			g, err = rword.New()
+			if err != nil {
+				panic(err)
+			}
+			words := strings.Join(g.WordList(i), " ")
+			return words
+		}
+		t["randWordsReplace"] = func(s string) string {
+			var g rword.GenerateRandom
+			var err error
+			// Create a random word generator using saved dict with 370_000+ words.
+			g, err = rword.New()
+			if err != nil {
+				panic(err)
+			}
+			words := strings.Join(g.WordList(len(strings.Fields(s))), " ")
+			return words
 		}
 
 		return t
